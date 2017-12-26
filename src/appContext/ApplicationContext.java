@@ -1,8 +1,10 @@
 package appContext;
 
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import notificationConfig.NotificationConfigDTO;
+import DTO.NotificationConfigDTO;
 
 public class ApplicationContext {
 
@@ -12,8 +14,17 @@ public class ApplicationContext {
 
 	private NotificationConfigDTO notificationConfigObj;
 	private Date lastVerifiedDate;
+	ExecutorService executor;
 
 	private static ApplicationContext instanceObj = null;
+
+	public void initialiseThreadPool(int threadCount) {
+		executor = Executors.newFixedThreadPool(threadCount);
+	}
+
+	public ExecutorService getExecutor() {
+		return executor;
+	}
 
 	public Date getLastVerifiedDate() {
 		return lastVerifiedDate;

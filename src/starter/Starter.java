@@ -4,12 +4,13 @@ import java.io.File;
 import java.util.Date;
 import java.util.Scanner;
 
+import DTO.NotificationConfigDTO;
 import appContext.ApplicationContext;
 import commandConfig.CommandConfigHolder;
 import configReader.ConfigReader;
+import constants.Constants;
 import logger.Logger;
 import looper.Looper;
-import notificationConfig.NotificationConfigDTO;
 import taskRunners.MailTaskRunner;
 
 public class Starter {
@@ -23,10 +24,10 @@ public class Starter {
 			Scanner scanner = new Scanner(System.in);
 
 			System.out.print("Enter unique key for notifier to listen on : ");
-			uniqueKey = scanner.nextLine();
+			uniqueKey = scanner.nextLine().trim();
 
 			System.out.print("Enter path for command config file : ");
-			commandConfigPath = scanner.nextLine();
+			commandConfigPath = scanner.nextLine().trim();
 
 			if (!new File(commandConfigPath).isFile()) {
 				System.out.println("Please enter proper file path and run again");
@@ -50,6 +51,7 @@ public class Starter {
 		ApplicationContext.getInstance().setNotificationConfigObj(notificationConfig);
 
 		ApplicationContext.getInstance().setLastVerifiedDate(new Date());
+		ApplicationContext.getInstance().initialiseThreadPool(Constants.THREAD_POOL_COUNT);
 
 		System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 		Looper lp = new Looper();

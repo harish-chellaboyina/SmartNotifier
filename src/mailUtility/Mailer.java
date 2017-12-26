@@ -6,13 +6,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.BodyPart;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import logger.Logger;
 
@@ -64,9 +66,9 @@ public class Mailer {
 		return null;
 	}
 
-	public static List<String> filterMails(Message[] mails, String subject) {
+	public static List<Message> filterMailsBySubject(Message[] mails, String subject) {
 
-		List<String> commandList = new ArrayList<String>();
+		List<Message> filteredMails = new ArrayList<Message>();
 
 		for (int i = 0; i < mails.length; i++) {
 			Message mail = mails[i];
@@ -76,9 +78,7 @@ public class Mailer {
 
 				if (!(multipart instanceof String)) {
 					if (mail.getSubject().equals(subject)) {
-						BodyPart bp = ((Multipart) multipart).getBodyPart(0);
-						String mailContent = (String) bp.getContent();
-						commandList.add(mailContent.trim());
+						filteredMails.add(mail);
 					}
 				}
 
@@ -87,7 +87,42 @@ public class Mailer {
 			}
 
 		}
-		return commandList;
+		return filteredMails;
 	}
+	
+	public static synchronized boolean sendMail(String username, String password, String to, String subject, String body) {
+		
+		Properties props = new Properties();
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.smtp.host", "smtp.gmail.com");
+		props.put("mail.smtp.port", "587");
+
+		Session session = Session.getInstance(props,
+		  new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		  });
+
+		try {
+
+			Message message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(username));
+			message.setRecipients(Message.RecipientType.TO,
+				InternetAddress.parse(to));
+			message.setSubject(subject);
+			message.setText(body);
+
+			Transport.send(message);
+
+
+		} catch (MessagingException e) {
+			throw new RuntimeException(e);
+		}
+		return false;
+		
+	}
+	
 
 }

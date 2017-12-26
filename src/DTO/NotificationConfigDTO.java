@@ -1,4 +1,4 @@
-package notificationConfig;
+package DTO;
 
 import commandConfig.CommandConfigHolder;
 

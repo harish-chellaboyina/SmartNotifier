@@ -5,11 +5,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.util.*;
+
 import logger.Logger;
 
 public class CommandExecutor {
 
-	public static boolean executeCommand(String path, String[] command) {
+	public List<String> executeCommand(String path, String[] command) {
 		try {
 			ProcessBuilder builder = new ProcessBuilder(command);
 			builder.directory(new File(path));
@@ -17,18 +19,25 @@ public class CommandExecutor {
 			Process p = builder.start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
+			LinkedList<String> list = new LinkedList<String>();
+
 			while (true) {
 				line = r.readLine();
 				if (line == null) {
 					break;
 				}
-				Logger.debug(line);
+				if (list.size() == 10)
+					list.removeFirst();
+				list.addLast(line);
 			}
-			return true;
+			Logger.debug("Successfully executed the command - " + String.join(" ", command) + " at path - " + path);
+		    return new ArrayList<String>(list);
+
 
 		} catch (IOException e) {
+			Logger.debug("Failed to execute the command - " + String.join(" ", command) + " at path - " + path);
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 
 	}
