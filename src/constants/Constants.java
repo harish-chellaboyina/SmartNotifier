@@ -10,6 +10,6 @@ public class Constants {
 	public static final String COMMAND_UPDATE_MAIL_SUBJECT = "Command response";
 
 	// These details has to be filled by user
-	public static final String GMAIL_USERNAME = "smartnotifierbyharish@gmail.com";
-	public static final String GMAIL_PASSWORD = "Harish@591";
+	public static final String GMAIL_USERNAME = "";
+	public static final String GMAIL_PASSWORD = "";
 }
